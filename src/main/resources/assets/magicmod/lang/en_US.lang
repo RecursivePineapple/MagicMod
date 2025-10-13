@@ -1,0 +1,27 @@
+tile.rune.name=Rune
+tile.chalk-mixer.name=Chalk Mixer
+
+item.chalk.name=Rune Chalk (%s)
+item.aura-stone.name=Aura Stone
+
+magicmod.chalk-mode.PlaceRune=Runes
+magicmod.chalk-mode.ToggleStrong=Rune Linking
+magicmod.chalk-mode.ToggleWeak=Array Linking
+magicmod.chalk-mode.Debug=Debug
+
+magicmod.misc.rune_colon=Rune: %s
+
+magicmod.rune.A=A
+magicmod.rune.Input=Input
+magicmod.rune.Output=Output
+magicmod.rune.Transfer=Transfer
+magicmod.rune.Extract=Extract
+magicmod.rune.AuraField=Aura Fields
+magicmod.rune.Order=Order
+magicmod.rune.Toh=Toh
+magicmod.rune.Lah=Lah
+magicmod.rune.Doh=Doh
+
+magicmod.tooltips.aura-stone.empty=No Aura Stored
+magicmod.tooltips.aura-stone.header=Stored Aura:
+magicmod.tooltips.aura-stone.line=%s: %.2d
