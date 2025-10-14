@@ -7,7 +7,7 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 
 import magicmod.common.interfaces.IItemTexture;
-import magicmod.common.util.ImmutableColor;
+import materiallib.api.util.ImmutableColor;
 
 public class ItemTexture implements IItemTexture {
 

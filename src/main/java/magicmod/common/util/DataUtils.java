@@ -239,6 +239,20 @@ public class DataUtils {
         return count;
     }
 
+    public static <T> ArrayList<T> filterList(List<T> input, Predicate<T> filter) {
+        ArrayList<T> output = new ArrayList<>(input.size());
+
+        for (int i = 0, inputSize = input.size(); i < inputSize; i++) {
+            T t = input.get(i);
+
+            if (filter.test(t)) {
+                output.add(t);
+            }
+        }
+
+        return output;
+    }
+
     public static <T> T getIndexSafe(T[] array, int index) {
         return array == null || index < 0 || index >= array.length ? null : array[index];
     }

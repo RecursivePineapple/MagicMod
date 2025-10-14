@@ -13,8 +13,8 @@ import magicmod.common.interfaces.IItemTexture;
 import magicmod.common.interfaces.IRuneItem;
 import magicmod.common.interfaces.ItemWithTextures;
 import magicmod.common.runes.Rune;
-import magicmod.common.util.Color;
 import magicmod.common.util.MCUtils;
+import materiallib.api.util.Color;
 
 public class ItemRune extends ItemBlock implements ItemWithTextures, IRuneItem {
 

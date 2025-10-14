@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import com.gtnewhorizon.gtnhlib.hash.Fnv1a32;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import magicmod.common.util.MCUtils;
 
 public class ChalkRegistry {
@@ -34,23 +33,33 @@ public class ChalkRegistry {
         }
     };
 
-    private static final ObjectOpenCustomHashSet<ItemStack> CHALK_BASES = new ObjectOpenCustomHashSet<>(ITEMSTACK_HASH_STRATEGY_NBT_SENSITIVE);
+    private static final Object2ObjectOpenCustomHashMap<ItemStack, IChalkModifier> CHALK_BASES = new Object2ObjectOpenCustomHashMap<>(ITEMSTACK_HASH_STRATEGY_NBT_SENSITIVE);
 
     private static final Object2ObjectOpenCustomHashMap<ItemStack, IChalkModifier> CHALK_DOPANTS = new Object2ObjectOpenCustomHashMap<>(ITEMSTACK_HASH_STRATEGY_NBT_SENSITIVE);
 
     public static boolean isChalkBase(ItemStack stack) {
-        return CHALK_BASES.contains(stack);
+        return CHALK_BASES.containsKey(stack);
     }
 
     public static boolean isChalkDopant(ItemStack stack) {
         return CHALK_DOPANTS.containsKey(stack);
     }
 
-    public static void registerChalkBase(ItemStack stack) {
-        CHALK_BASES.add(stack.copy());
+    public static void registerChalkBase(ItemStack stack, IChalkModifier chalkModifier) {
+        CHALK_BASES.put(stack.copy(), chalkModifier);
     }
 
     public static void registerChalkDopant(ItemStack stack, IChalkModifier chalkModifier) {
         CHALK_DOPANTS.put(stack.copy(), chalkModifier);
+    }
+
+    public static IChalkModifier getChalkModifier(ItemStack stack) {
+        IChalkModifier base = CHALK_BASES.get(stack);
+        if (base != null) return base;
+
+        IChalkModifier dopant = CHALK_DOPANTS.get(stack);
+        if (dopant != null) return dopant;
+
+        return null;
     }
 }

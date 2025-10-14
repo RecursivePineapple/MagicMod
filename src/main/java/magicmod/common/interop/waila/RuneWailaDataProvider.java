@@ -9,7 +9,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import magicmod.MagicMod;
-import magicmod.common.tiles.TileEntityRune;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
@@ -30,12 +29,12 @@ public class RuneWailaDataProvider implements IWailaDataProvider {
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
-        if (accessor.getTileEntity() instanceof TileEntityRune rune) {
+        if (accessor.getTileEntity() instanceof IWailaTile wailaTile) {
             try {
-                rune.getWailaBody(itemStack, currenttip, accessor, config);
+                wailaTile.getWailaBody(itemStack, currenttip, accessor, config);
             } catch (Throwable t) {
                 // waila doesn't print a useful stacktrace, so catch the error and rethrow it
-                MagicMod.LOG.error("Could not call getWailaBody on {}", rune, t);
+                MagicMod.LOG.error("Could not call getWailaBody on {}", wailaTile, t);
                 throw t;
             }
         }
@@ -52,9 +51,9 @@ public class RuneWailaDataProvider implements IWailaDataProvider {
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x,
         int y, int z) {
-        if (tile instanceof TileEntityRune rune) {
+        if (tile instanceof IWailaTile wailaTile) {
             try {
-                rune.getWailaNBTData(player, tile, tag, world, x, y, z);
+                wailaTile.getWailaNBTData(player, tag);
             } catch (Throwable t) {
                 MagicMod.LOG.error("Could not call getWailaNBTData on {}", tile, t);
                 throw t;

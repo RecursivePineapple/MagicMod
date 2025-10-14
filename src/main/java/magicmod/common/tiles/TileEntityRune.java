@@ -13,7 +13,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import magicmod.common.blocks.BlockRune;
@@ -22,6 +21,7 @@ import magicmod.common.factory.ArrayFactoryGrid;
 import magicmod.common.factory.ArrayFactoryNetwork;
 import magicmod.common.factory.FormationFactoryGrid;
 import magicmod.common.factory.FormationNeighbourAdder;
+import magicmod.common.interop.waila.IWailaTile;
 import magicmod.common.items.ItemChalk;
 import magicmod.common.mechanics.AuraBuffer;
 import magicmod.common.mechanics.IAuraBuffer;
@@ -32,7 +32,7 @@ import magicmod.common.util.MCUtils;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 
-public class TileEntityRune extends TileEntity implements ArrayFactoryElement {
+public class TileEntityRune extends TileEntity implements ArrayFactoryElement, IWailaTile {
 
     public final EnumSet<ForgeDirection> strongConnections = EnumSet.noneOf(ForgeDirection.class);
     public final EnumSet<ForgeDirection> weakConnections = EnumSet.noneOf(ForgeDirection.class);
@@ -257,7 +257,8 @@ public class TileEntityRune extends TileEntity implements ArrayFactoryElement {
         this.arrayNetwork = arrayFactoryNetwork;
     }
 
-    public void getWailaNBTData(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y, int z) {
+    @Override
+    public void getWailaNBTData(EntityPlayerMP player, NBTTagCompound tag) {
         tag.setString("array", Objects.toString(arrayNetwork));
         tag.setString("formation", Objects.toString(arrayNetwork == null ? null : arrayNetwork.formationNetwork));
 
@@ -267,6 +268,7 @@ public class TileEntityRune extends TileEntity implements ArrayFactoryElement {
         tag.setTag("aura", temp.writeToNBT(new NBTTagCompound()));
     }
 
+    @Override
     public void getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
         IWailaConfigHandler config) {
         currenttip.add("Array: " + accessor.getNBTData().getString("array"));

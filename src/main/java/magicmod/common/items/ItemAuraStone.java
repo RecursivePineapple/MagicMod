@@ -21,9 +21,9 @@ import magicmod.common.interfaces.IItemTexture;
 import magicmod.common.interfaces.ItemWithTextures;
 import magicmod.common.mechanics.AuraBuffer;
 import magicmod.common.mechanics.IConcept;
-import magicmod.common.util.Color;
-import magicmod.common.util.ImmutableColor;
 import magicmod.common.util.MCUtils;
+import materiallib.api.util.Color;
+import materiallib.api.util.ImmutableColor;
 
 public class ItemAuraStone extends Item implements ItemWithTextures, IAuraStorageItem {
 
@@ -47,18 +47,18 @@ public class ItemAuraStone extends Item implements ItemWithTextures, IAuraStorag
         ItemTexture foreground = new ItemTexture(stack -> ItemAuraStone.foreground, stack -> {
             AuraBuffer buffer = ItemAuraStone.getStoredAura(stack);
 
-            return switch (buffer.energies.size()) {
+            List<Pair<IConcept, String>> concepts = new ArrayList<>();
+
+            buffer.forEachConcept((concept, amount) -> {
+                concepts.add(Pair.of(concept, concept.toString()));
+            });
+
+            concepts.sort(Comparator.comparing(Pair::right));
+
+            return switch (concepts.size()) {
                 case 0 -> null;
-                case 1 -> buffer.energies.keySet().iterator().next().getColor();
+                case 1 -> concepts.iterator().next().left().getColor();
                 default -> {
-                    List<Pair<IConcept, String>> concepts = new ArrayList<>();
-
-                    buffer.forEachConcept((concept, amount) -> {
-                        concepts.add(Pair.of(concept, concept.toString()));
-                    });
-
-                    concepts.sort(Comparator.comparing(Pair::right));
-
                     double k = (System.currentTimeMillis() / 2000d);
 
                     IConcept lower = concepts.get((int) (k % concepts.size())).left();

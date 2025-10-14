@@ -25,3 +25,11 @@ magicmod.rune.Doh=Doh
 magicmod.tooltips.aura-stone.empty=No Aura Stored
 magicmod.tooltips.aura-stone.header=Stored Aura:
 magicmod.tooltips.aura-stone.line=%s: %.2d
+
+magicmod.tooltips.chalk.base=Base Material: %s
+magicmod.tooltips.chalk.dopant.header=Dopants:
+magicmod.tooltips.chalk.dopant.entry=- %s
+
+# Materials
+material.name.magicmod.Gypsum=Gypsum
+material.name.magicmod.AuraStone=Aura Stone

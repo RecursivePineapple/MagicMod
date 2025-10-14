@@ -8,9 +8,9 @@ import net.minecraft.nbt.NBTTagList;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import magicmod.common.util.DataUtils;
-import magicmod.common.util.HSVColor;
-import magicmod.common.util.ImmutableColor;
 import magicmod.common.util.MCUtils;
+import materiallib.api.util.HSVColor;
+import materiallib.api.util.ImmutableColor;
 
 public class CompoundConcept implements IConcept {
 

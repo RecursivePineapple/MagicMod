@@ -2,8 +2,8 @@ package magicmod.common.mechanics;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import magicmod.common.util.Color;
-import magicmod.common.util.ImmutableColor;
+import materiallib.api.util.Color;
+import materiallib.api.util.ImmutableColor;
 
 public enum BaseConcept implements IConcept {
     Order(Color.fromRGB(0xE1E1FF)),

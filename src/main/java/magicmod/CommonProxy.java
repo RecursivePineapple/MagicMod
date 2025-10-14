@@ -3,8 +3,9 @@ package magicmod;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.oredict.OreDictionary;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ import magicmod.common.interop.waila.WailaInit;
 import magicmod.common.items.ItemAuraStone;
 import magicmod.common.items.ItemChalk;
 import magicmod.common.items.ItemRune;
+import magicmod.common.materials.MagicMaterials;
 import magicmod.common.mechanics.AuraBuffer;
 import magicmod.common.mechanics.AuraDistribution;
 import magicmod.common.mechanics.BaseConcept;
@@ -45,40 +47,15 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         GameRegistry.registerItem(ItemChalk.INSTANCE, "chalk");
+
         GameRegistry.registerItem(ItemAuraStone.INSTANCE, "aura-stone");
+        OreDictionary.registerOre("gemAuraStone", new ItemStack(ItemAuraStone.INSTANCE, 1));
 
         GameRegistry.registerBlock(BlockRune.INSTANCE, ItemRune.class, "rune");
         GameRegistry.registerBlock(BlockItemHolder.INSTANCE, "item-holder");
 
         GameRegistry.registerBlock(BlockChalkMixer.INSTANCE, "chalk-mixer");
         GameRegistry.registerTileEntity(TileEntityChalkMixer.class, "chalk-mixer");
-
-        Item gypsum = new Item();
-        gypsum.setUnlocalizedName("gypsum");
-        GameRegistry.registerItem(gypsum, "gypsum");
-        ChalkRegistry.registerChalkBase(new ItemStack(gypsum, 1));
-
-        Item stuff = new Item();
-        stuff.setUnlocalizedName("stuff");
-        GameRegistry.registerItem(stuff, "stuff");
-        ChalkRegistry.registerChalkDopant(
-            new ItemStack(stuff, 1), new IChalkModifier() {
-
-                @Override
-                public @Nullable AuraDistribution getAuraDistribution() {
-                    return null;
-                }
-
-                @Override
-                public @NotNull List<ChalkTrait> getTraits() {
-                    return new ArrayList<>();
-                }
-
-                @Override
-                public AuraBuffer getRequiredMixingAura() {
-                    return new AuraBuffer();
-                }
-            });
 
         if (Mods.Waila.isModLoaded()) {
             WailaInit.init();
@@ -93,7 +70,53 @@ public class CommonProxy {
                 Curve.normal(25, 2000, 100, 100)));
     }
 
-    public void postInit(FMLPostInitializationEvent event) {}
+    public void postInit(FMLPostInitializationEvent event) {
+        ItemStack gypsum = MagicMaterials.Gypsum.getDust(1);
+
+        ChalkRegistry.registerChalkBase(
+            gypsum, new IChalkModifier() {
+
+                @Override
+                public @Nullable AuraDistribution getAuraDistribution() {
+                    return null;
+                }
+
+                @Override
+                public @NotNull List<ChalkTrait> getTraits() {
+                    return new ArrayList<>();
+                }
+
+                @Override
+                public AuraBuffer getRequiredMixingAura() {
+                    AuraBuffer aura = new AuraBuffer();
+                    aura.add(BaseConcept.Fire, 10);
+                    return aura;
+                }
+            });
+
+        ItemStack auraStoneDust = MagicMaterials.AuraStone.getDust(1);
+
+        ChalkRegistry.registerChalkDopant(
+            auraStoneDust, new IChalkModifier() {
+
+                @Override
+                public @Nullable AuraDistribution getAuraDistribution() {
+                    return null;
+                }
+
+                @Override
+                public @NotNull List<ChalkTrait> getTraits() {
+                    return new ArrayList<>();
+                }
+
+                @Override
+                public AuraBuffer getRequiredMixingAura() {
+                    AuraBuffer aura = new AuraBuffer();
+                    aura.add(BaseConcept.Order, 10);
+                    return aura;
+                }
+            });
+    }
 
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new AuraFieldCommand());

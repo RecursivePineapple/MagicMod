@@ -4,11 +4,19 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -16,7 +24,9 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -57,6 +67,38 @@ public class MCUtils {
     public static final String RESET = EnumChatFormatting.RESET.toString();
 
     public static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
+    public static final Collector<NBTBase, NBTTagList, NBTTagList> NBT_TAG_LIST_COLLECTOR = new Collector<>() {
+
+        @Override
+        public Supplier<NBTTagList> supplier() {
+            return NBTTagList::new;
+        }
+
+        @Override
+        public BiConsumer<NBTTagList, NBTBase> accumulator() {
+            return NBTTagList::appendTag;
+        }
+
+        @Override
+        public BinaryOperator<NBTTagList> combiner() {
+            return (from, to) -> {
+                //noinspection unchecked
+                to.tagList.addAll(from.tagList);
+
+                return to;
+            };
+        }
+
+        @Override
+        public Function<NBTTagList, NBTTagList> finisher() {
+            return Function.identity();
+        }
+
+        @Override
+        public Set<Characteristics> characteristics() {
+            return new HashSet<>(Arrays.asList(Characteristics.IDENTITY_FINISH));
+        }
+    };
 
     private MCUtils() {}
 
@@ -71,6 +113,11 @@ public class MCUtils {
     public static Iterable<NBTTagCompound> getTagList(NBTTagCompound tag, String key) {
         //noinspection unchecked
         return tag.getTagList(key, Constants.NBT.TAG_COMPOUND).tagList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <NBT extends NBTBase> Collector<NBT, ?, NBTTagList> toNBTTagList() {
+        return (Collector<NBT, ?, NBTTagList>) NBT_TAG_LIST_COLLECTOR;
     }
 
     public static void sendErrorMessage(ICommandSender player, String message) {

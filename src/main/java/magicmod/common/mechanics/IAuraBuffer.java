@@ -18,6 +18,10 @@ public interface IAuraBuffer extends Iterable<AuraStack> {
 
     Set<IConcept> getStoredConcepts();
 
+    default boolean isEmpty() {
+        return Math.abs(getTotalAmount()) <= 0.00001;
+    }
+
     /** Gets the amount of aura for a given concept that's stored in this buffer. */
     double getAmount(IConcept concept);
 

@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import magicmod.common.util.ImmutableColor;
+import materiallib.api.util.ImmutableColor;
 
 public interface IConcept {
 
