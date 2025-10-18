@@ -1,0 +1,104 @@
+{
+  "DataVersion": 1,
+  "aabb": {
+    "origin": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "a": {
+      "x": 1,
+      "y": 4,
+      "z": 1
+    },
+    "b": {
+      "x": -1,
+      "y": 0,
+      "z": -1
+    }
+  },
+  "budget": [
+    {
+      "action": "consume",
+      "category": "stairs",
+      "amount": 1
+    }
+  ],
+  "sockets": [
+    {
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "category": "stairs",
+      "id": "0",
+      "forward": "DOWN"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 3,
+        "z": 0
+      },
+      "category": "stairs",
+      "id": "0",
+      "forward": "UP"
+    }
+  ],
+  "entities": [],
+  "blocks": {
+    "offsetX": -1,
+    "offsetY": 0,
+    "offsetZ": -1,
+    "structure": [
+      [
+        "AAA",
+        "ABA",
+        "BFA"
+      ],
+      [
+        "BAA",
+        "DBA",
+        "AAA"
+      ],
+      [
+        "ACB",
+        "ABA",
+        "AAA"
+      ],
+      [
+        "AAA",
+        "ABE",
+        "AAB"
+      ]
+    ]
+  },
+  "palette": [
+    {
+      "Name": "minecraft:air",
+      "Meta": 0
+    },
+    {
+      "Name": "minecraft:stonebrick",
+      "Meta": 0
+    },
+    {
+      "Name": "minecraft:stone_brick_stairs",
+      "Meta": 0
+    },
+    {
+      "Name": "minecraft:stone_brick_stairs",
+      "Meta": 3
+    },
+    {
+      "Name": "minecraft:stone_brick_stairs",
+      "Meta": 2
+    },
+    {
+      "Name": "minecraft:stone_brick_stairs",
+      "Meta": 1
+    }
+  ],
+  "weight": 1.0
+}

@@ -1,5 +1,6 @@
 package magicmod;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,8 @@ import magicmod.common.mechanics.chalk.IChalkModifier;
 import magicmod.common.tiles.TileEntityChalkMixer;
 import magicmod.common.util.Curve;
 import magicmod.common.util.Mods;
+import magicmod.common.worldgen.structure.core.StructurePieceCommand;
+import magicmod.common.worldgen.structure.test.TestStructurePieceGenerator;
 import magicmod.server.commands.AuraFieldCommand;
 
 public class CommonProxy {
@@ -116,9 +119,16 @@ public class CommonProxy {
                     return aura;
                 }
             });
+
+        try {
+            new TestStructurePieceGenerator();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new AuraFieldCommand());
+        event.registerServerCommand(new StructurePieceCommand());
     }
 }

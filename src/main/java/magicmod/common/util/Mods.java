@@ -4,13 +4,16 @@ import java.util.Locale;
 
 import net.minecraft.util.ResourceLocation;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.gtnewhorizon.gtnhlib.util.data.IMod;
 
+import com.gtnewhorizon.gtnhmixins.builders.ITargetMod;
+import com.gtnewhorizon.gtnhmixins.builders.TargetModBuilder;
 import cpw.mods.fml.common.Loader;
 
-public enum Mods implements IMod {
-
-    // See "Names" below to see why the mods are in this specific order
+@SuppressWarnings("unused")
+public enum Mods implements IMod, ITargetMod {
 
     AE2FluidCraft(Names.A_E2_FLUID_CRAFT),
     AFSU(Names.A_F_S_U),
@@ -92,7 +95,13 @@ public enum Mods implements IMod {
     ForgeMicroblocks(Names.FORGE_MICROBLOCKS),
     ForgeRelocation(Names.FORGE_RELOCATION),
     Forgelin(Names.FORGELIN),
-    GregTech(Names.GREG_TECH),
+    GregTech(Names.GREG_TECH) {
+
+        @Override
+        protected String getEffectiveModID() {
+            return Names.GREG_TECH_NH;
+        }
+    },
     BartWorks(Names.BART_WORKS),
     DetravScannerMod(Names.DETRAV_SCANNER_MOD),
     GalactiGreg(Names.GALACTI_GREG),
@@ -273,7 +282,13 @@ public enum Mods implements IMod {
     Witchery(Names.WITCHERY),
     ZTones(Names.Z_TONES),
 
-    Minecraft(Names.MINECRAFT),
+    Minecraft(Names.MINECRAFT) {
+
+        @Override
+        public boolean isModLoaded() {
+            return true;
+        }
+    },
 
     Aroma1997Core(Names.AROMA1997_CORE),
     ExtraCells2(Names.EXTRA_CELLS2),
@@ -376,6 +391,7 @@ public enum Mods implements IMod {
         public static final String FORGE_RELOCATION = "ForgeRelocation";
         public static final String FORGELIN = "forgelin";
         public static final String GREG_TECH = "gregtech",
+            GREG_TECH_NH = "gregtech_nh",
             BART_WORKS = "bartworks",
             DETRAV_SCANNER_MOD = "detravscannermod",
             GALACTI_GREG = "galacticgreg",
@@ -578,24 +594,35 @@ public enum Mods implements IMod {
 
     public final String ID;
     public final String resourceDomain;
-    private Boolean modLoaded;
+    protected boolean checkedMod, modLoaded;
+    protected final TargetModBuilder builder;
 
     Mods(String ID) {
         this.ID = ID;
         this.resourceDomain = ID.toLowerCase(Locale.ENGLISH);
+        this.builder = new TargetModBuilder().setModId(getEffectiveModID());
     }
 
     @Override
-    public boolean isModLoaded() {
-        if (this.modLoaded == null) {
-            this.modLoaded = Loader.isModLoaded(ID);
-        }
-        return this.modLoaded;
+    public @NotNull TargetModBuilder getBuilder() {
+        return builder;
     }
 
     @Override
     public String getID() {
         return ID;
+    }
+
+    protected String getEffectiveModID() {
+        return ID;
+    }
+
+    public boolean isModLoaded() {
+        if (!checkedMod) {
+            this.modLoaded = Loader.isModLoaded(getEffectiveModID());
+            checkedMod = true;
+        }
+        return this.modLoaded;
     }
 
     @Override
