@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "meta=0": {
+      "model": "magicmod:blocks/item-holder"
+    }
+  }
+}

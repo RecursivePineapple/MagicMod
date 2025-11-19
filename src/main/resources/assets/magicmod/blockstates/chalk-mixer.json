@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "magicmod:blocks/chalk-mixer-south"
+    },
+    "facing=north": {
+      "model": "magicmod:blocks/chalk-mixer-north"
+    },
+    "facing=east": {
+      "model": "magicmod:blocks/chalk-mixer-east"
+    },
+    "facing=west": {
+      "model": "magicmod:blocks/chalk-mixer-west"
+    },
+    "": {
+      "model": "magicmod:blocks/chalk-mixer-east"
+    }
+  }
+}
