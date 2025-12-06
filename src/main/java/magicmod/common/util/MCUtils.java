@@ -23,6 +23,7 @@ import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -402,5 +403,13 @@ public class MCUtils {
         }
 
         throw new IllegalArgumentException("Unhandled element " + jsonElement);
+    }
+
+    public static void setBlockBounds(Block block, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        float pixel = 1f /16f;
+
+        block.setBlockBounds(
+            pixel * minX, pixel * minY, pixel * minZ,
+            pixel * maxX, pixel * maxY, pixel * maxZ);
     }
 }

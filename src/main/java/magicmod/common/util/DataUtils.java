@@ -123,6 +123,10 @@ public class DataUtils {
         return a * (1 - k) + b * k;
     }
 
+    public static double dot2(double x, double y, double z) {
+        return x * x + y * y + z * z;
+    }
+
     public static <S, T> List<T> mapToList(Collection<S> in, Function<S, T> mapper) {
         if (in == null) return null;
 

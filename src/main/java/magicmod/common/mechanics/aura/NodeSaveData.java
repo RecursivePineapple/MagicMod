@@ -14,7 +14,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import magicmod.common.util.ChunkMap;
+import magicmod.common.data.ChunkMap;
 import magicmod.common.util.MCUtils;
 
 @EventBusSubscriber

@@ -1,7 +1,10 @@
 package magicmod.common.mechanics;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public class AuraStack {
 
     public IConcept concept;
@@ -26,24 +29,5 @@ public class AuraStack {
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (!(o instanceof AuraStack auraStack)) return false;
-
-        return Double.compare(amount, auraStack.amount) == 0 && Objects.equals(concept, auraStack.concept);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hashCode(concept);
-        result = 31 * result + Double.hashCode(amount);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "AuraStack{" + "concept=" + concept + ", amount=" + amount + '}';
     }
 }

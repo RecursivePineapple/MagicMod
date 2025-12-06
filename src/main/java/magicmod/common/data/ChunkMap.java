@@ -1,9 +1,8 @@
-package magicmod.common.util;
+package magicmod.common.data;
 
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -115,8 +114,8 @@ public class ChunkMap<V> extends Long2ObjectOpenHashMap<V> {
                 public ChunkEntry<V> next() {
                     var e = iter.next();
 
-                    entry.setKey(e.getLongKey());
-                    entry.setValue(e.getValue());
+                    entry.setKeyImpl(e.getLongKey());
+                    entry.setValueImpl(e.getValue());
 
                     return entry;
                 }
@@ -166,15 +165,12 @@ public class ChunkMap<V> extends Long2ObjectOpenHashMap<V> {
             super(pack(chunkX, chunkZ), value);
         }
 
-        void setKey(long key) {
+        private void setKeyImpl(long key) {
             super.key = key;
         }
 
-        @Override
-        public T setValue(T value) {
-            T old = super.value;
+        private void setValueImpl(T value) {
             super.value = value;
-            return old;
         }
 
         public final int getChunkX() {

@@ -16,6 +16,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderFlat;
 import net.minecraft.world.gen.structure.MapGenStructure;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
@@ -218,6 +219,9 @@ public abstract class StructurePieceGenerator extends MapGenStructure implements
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+        if (chunkGenerator instanceof ChunkProviderFlat) return;
+        if (chunkProvider instanceof ChunkProviderFlat) return;
+
         this.func_151539_a(chunkProvider, world, chunkX, chunkZ, null);
 
         primeRNG(chunkX, chunkZ);
@@ -227,6 +231,8 @@ public abstract class StructurePieceGenerator extends MapGenStructure implements
 
     @Override
     public boolean generateStructuresInChunk(World world, Random rng, int chunkX, int chunkZ) {
+        if (world.getChunkProvider() instanceof ChunkProviderFlat) return false;
+
         this.loadDataIfNeeded(world);
 
         boolean didSomething = false;
@@ -693,7 +699,7 @@ public abstract class StructurePieceGenerator extends MapGenStructure implements
 
         @Override
         public boolean addComponentParts(World world, Random rng, StructureBoundingBox boundingBox) {
-            piece.place(world, caabb.origin, boundingBox);
+            piece.place(world, caabb.origin, boundingBox, null);
 
             return true;
         }

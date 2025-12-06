@@ -11,10 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,6 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -40,14 +39,18 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-import cpw.mods.fml.common.registry.GameRegistry;
+import com.gtnewhorizon.gtnhlib.blockstate.core.BlockState;
+import com.gtnewhorizon.gtnhlib.blockstate.core.BlockStateImpl;
+import com.gtnewhorizon.gtnhlib.blockstate.core.BlockStateSerializer;
+import com.gtnewhorizon.gtnhlib.blockstate.registry.BlockPropertyRegistry;
+import com.gtnewhorizon.gtnhlib.geometry.VectorTransform;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import magicmod.common.data.BlockPosMap;
 import magicmod.common.util.MCUtils;
-import magicmod.common.util.StaticEnumJsonAdapter;
 import magicmod.common.util.VoxelAABB;
 
 public class StructurePiece {
@@ -86,46 +89,32 @@ public class StructurePiece {
         public int blockIndex;
     }
 
-    public enum BlockReplaceMode {
-        // Only add to the end of this! These are saved as ordinals in structures.
-        ALWAYS,
-        REPLACEABLE,
-        ONLY_AIR,
-        //
-        ;
-    }
-
     @EqualsAndHashCode
     @NoArgsConstructor
     @ToString
     public static class PaletteBlock {
-        @SerializedName("Name")
-        public String name;
-        @SerializedName("Meta")
-        public int meta;
-        @SerializedName("Properties")
-        public HashMap<String, String> properties;
+        public BlockState blockState;
 
-        public BlockReplaceMode replaceMode = BlockReplaceMode.ALWAYS;
-
-        @EqualsAndHashCode.Exclude
-        private transient Block block;
-
-        public Block getBlock() {
-            if (block != null) return block;
-
-            String[] halves = name.split(":");
-
-            int i = 0;
-
-            block = GameRegistry.findBlock(halves.length == 1 ? "minecraft" : halves[i++], halves[i]);
-
-            return block;
+        public PaletteBlock(BlockState blockState) {
+            this.blockState = blockState;
         }
 
-        public PaletteBlock(String name, int meta) {
-            this.name = name;
-            this.meta = meta;
+        @Override
+        public PaletteBlock clone() {
+            return new PaletteBlock(this.blockState);
+        }
+    }
+
+    private static class PaletteBlockSerializer implements JsonSerializer<PaletteBlock>, JsonDeserializer<PaletteBlock> {
+
+        @Override
+        public JsonElement serialize(PaletteBlock src, Type typeOfSrc, JsonSerializationContext context) {
+            return context.serialize(src.blockState);
+        }
+
+        @Override
+        public PaletteBlock deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
+            return new PaletteBlock(context.deserialize(json, BlockState.class));
         }
     }
 
@@ -162,23 +151,57 @@ public class StructurePiece {
         public int lower, upper;
     }
 
-    public void place(World world, Vector3i origin, StructureBoundingBox aabb) {
+    /// @param aabb The transformed structure bounding box
+    public void place(World world, Vector3i origin, StructureBoundingBox aabb, VectorTransform transform) {
+        if (transform == null) {
+            transform = new VectorTransform() {
+                @Override
+                public Vector3f transform(Vector3f v) {
+                    return v;
+                }
+
+                @Override
+                public Vector3f inverse(Vector3f v) {
+                    return v;
+                }
+            };
+        }
+
         if (aabb != null) {
             aabb = new StructureBoundingBox(aabb);
             aabb.offset(-origin.x, -origin.y, -origin.z);
             aabb.offset(this.aabb.origin.x, this.aabb.origin.y, this.aabb.origin.z);
         }
 
-        for (BlockSpec block : blocks) {
-            if (aabb != null && !aabb.isVecInside(block.pos.x, block.pos.y, block.pos.z)) continue;
+        List<PaletteBlock> transformedPalette = new ArrayList<>(this.palette);
 
-            setBlock(
+        final VectorTransform transform2 = transform;
+
+        transformedPalette.replaceAll(palette -> {
+            palette = palette.clone();
+
+            palette.blockState.transform(transform2);
+
+            return palette;
+        });
+
+        Vector3f v = new Vector3f();
+
+        for (BlockSpec block : blocks) {
+            transform.transform(v.set(block.pos));
+
+            int x = Math.round(v.x);
+            int y = Math.round(v.y);
+            int z = Math.round(v.z);
+
+            if (aabb != null && !aabb.isVecInside(x, y, z)) continue;
+
+            place(
                 world,
-                origin.x + block.pos.x,
-                origin.y + block.pos.y,
-                origin.z + block.pos.z,
-                this.palette.get(block.blockIndex),
-                2);
+                origin.x + x,
+                origin.y + y,
+                origin.z + z,
+                this.palette.get(block.blockIndex));
         }
 
         if (entities != null) {
@@ -194,13 +217,19 @@ public class StructurePiece {
         }
     }
 
+    protected void place(World world, int x, int y, int z, PaletteBlock block) {
+        block.blockState.place(world, x, y, z);
+    }
+
     public List<Socket> getSockets() {
         return sockets == null ? Collections.emptyList() : sockets;
     }
 
     public static final Gson GSON = new GsonBuilder()
         .registerTypeAdapter(StructureBlocks.class, new StructureBlocksAdapter())
-        .registerTypeAdapter(BlockReplaceMode.class, new StaticEnumJsonAdapter<>(BlockReplaceMode.class))
+        .registerTypeAdapter(BlockStateImpl.class, BlockStateSerializer.INSTANCE)
+        .registerTypeAdapter(BlockState.class, BlockStateSerializer.INSTANCE)
+        .registerTypeAdapter(PaletteBlock.class, new PaletteBlockSerializer())
         .create();
 
     public static StructurePiece load(String path) throws IOException {
@@ -255,46 +284,51 @@ public class StructurePiece {
 
         Vector3i min = aabb.min(), max = aabb.max();
 
-        ArrayList<PaletteBlock> currentRow = new ArrayList<>(max.z - min.z + 1);
+        BlockPosMap<BlockSpec> specs = new BlockPosMap<>();
 
-        for (int y = min.y; y <= max.y; y++) {
-            for (int z = min.z; z <= max.z; z++) {
-                currentRow.clear();
+        for (Vector3ic v : aabb) {
+            int x = v.x();
+            int y = v.y();
+            int z = v.z();
 
-                int firstNonAir = 0, lastNonAir = 0;
-                boolean allAir = true;
+            PaletteBlock block = new PaletteBlock();
 
-                for (int x = min.x; x <= max.x; x++) {
-                    PaletteBlock block = getBlock(world, x, y, z);
+            block.blockState = BlockPropertyRegistry.getBlockState(world, x, y, z);
 
-                    if (!block.getBlock().isAir(world, x, y, z)) {
-                        if (allAir) firstNonAir = x;
-                        lastNonAir = x;
-                        allAir = false;
-                    }
+            int index = paletteMap.computeIfAbsent(block, (PaletteBlock b) -> {
+                int nextIndex = palette.size();
+                palette.add(b);
+                return nextIndex;
+            });
 
-                    currentRow.add(block);
+            BlockSpec spec = new BlockSpec(new Vector3i(x - cX, y - cY, z - cZ), index);
+            blocks.add(spec);
+            specs.put(x, y, z, spec);
+        }
+
+        for (Vector3ic v : aabb) {
+            int x = v.x();
+            int y = v.y();
+            int z = v.z();
+
+            boolean extraneous = scan(aabb, x, y, z, (x2, y2, z2) -> {
+                int index = specs.get(x2, y2, z2).blockIndex;
+
+                if (index == -1) {
+                    return true;
                 }
 
-                int i = 0;
+                PaletteBlock block = palette.get(index);
 
-                for (int x = min.x; x <= max.x; x++) {
-                    PaletteBlock block = currentRow.get(i++);
+                return !block.blockState.getBlock().isAir(world, x2, y2, z2);
+            });
 
-                    boolean isExternalAir = allAir || x < firstNonAir || x > lastNonAir;
-
-                    if (isExternalAir) continue;
-
-                    int index = paletteMap.computeIfAbsent(block, (PaletteBlock b) -> {
-                        int nextIndex = palette.size();
-                        palette.add(b);
-                        return nextIndex;
-                    });
-
-                    blocks.add(new BlockSpec(new Vector3i(x - cX, y - cY, z - cZ), index));
-                }
+            if (extraneous) {
+                specs.get(x, y, z).blockIndex = -1;
             }
         }
+
+        blocks.removeIf(spec -> spec.blockIndex == -1);
 
         StructurePiece piece = new StructurePiece();
         piece.dataVersion = 1;
@@ -326,15 +360,70 @@ public class StructurePiece {
         return piece;
     }
 
-    public static PaletteBlock getBlock(World world, int x, int y, int z) {
-        Block block = world.getBlock(x, y, z);
-        int meta = world.getBlockMetadata(x, y, z);
-
-        return new PaletteBlock(GameRegistry.findUniqueIdentifierFor(block).toString(), meta);
+    interface ScanPredicate {
+        boolean test(int x, int y, int z);
     }
 
-    public static void setBlock(World world, int x, int y, int z, PaletteBlock block, int flags) {
-        world.setBlock(x, y, z, block.getBlock(), block.meta, flags);
+    private static boolean scan(VoxelAABB aabb, int x, int y, int z, ScanPredicate test) {
+        Vector3i min = aabb.min(), max = aabb.max();
+
+        boolean neg = false, pos = false;
+
+        for (int x2 = x; x2 >= min.x; x2--) {
+            if (test.test(x2, y, z)) {
+                neg = true;
+                break;
+            }
+        }
+
+        for (int x2 = x; x2 <= max.x; x2++) {
+            if (test.test(x2, y, z)) {
+                pos = true;
+                break;
+            }
+        }
+
+        if (neg && pos) return false;
+
+        neg = false;
+        pos = false;
+
+        for (int y2 = y; y2 >= min.y; y2--) {
+            if (test.test(x, y2, z)) {
+                neg = true;
+                break;
+            }
+        }
+
+        for (int y2 = y; y2 <= max.y; y2++) {
+            if (test.test(x, y2, z)) {
+                pos = true;
+                break;
+            }
+        }
+
+        if (neg && pos) return false;
+
+        neg = false;
+        pos = false;
+
+        for (int z2 = z; z2 >= min.z; z2--) {
+            if (test.test(x, y, z2)) {
+                neg = true;
+                break;
+            }
+        }
+
+        for (int z2 = z; z2 <= max.z; z2++) {
+            if (test.test(x, y, z2)) {
+                pos = true;
+                break;
+            }
+        }
+
+        if (neg && pos) return false;
+
+        return true;
     }
 
     private static class CompactBlockList {

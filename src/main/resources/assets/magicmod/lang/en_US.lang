@@ -5,8 +5,8 @@ item.chalk.name=Rune Chalk (%s)
 item.aura-stone.name=Aura Stone
 
 magicmod.chalk-mode.PlaceRune=Runes
-magicmod.chalk-mode.ToggleStrong=Rune Linking
-magicmod.chalk-mode.ToggleWeak=Array Linking
+magicmod.chalk-mode.ToggleStrong=Arrays
+magicmod.chalk-mode.ToggleWeak=Formations
 magicmod.chalk-mode.Debug=Debug
 
 magicmod.misc.rune_colon=Rune: %s
@@ -21,6 +21,7 @@ magicmod.rune.Order=Order
 magicmod.rune.Toh=Toh
 magicmod.rune.Lah=Lah
 magicmod.rune.Doh=Doh
+magicmod.rune.Origin=Origin
 
 magicmod.tooltips.aura-stone.empty=No Aura Stored
 magicmod.tooltips.aura-stone.header=Stored Aura:
@@ -33,3 +34,17 @@ magicmod.tooltips.chalk.dopant.entry=- %s
 # Materials
 material.name.magicmod.Gypsum=Gypsum
 material.name.magicmod.AuraStone=Aura Stone
+
+material.name.magicmod.Air=Air
+material.name.magicmod.Fire=Fire
+material.name.magicmod.Water=Water
+material.name.magicmod.Earth=Earth
+material.name.magicmod.Order=Order
+material.name.magicmod.Entropy=Entropy
+
+material.prefix-override.magicmod.Air.dust=Crushed Air Aura Stone
+material.prefix-override.magicmod.Fire.dust=Crushed Fire Aura Stone
+material.prefix-override.magicmod.Water.dust=Crushed Water Aura Stone
+material.prefix-override.magicmod.Earth.dust=Crushed Earth Aura Stone
+material.prefix-override.magicmod.Order.dust=Crushed Order Aura Stone
+material.prefix-override.magicmod.Entropy.dust=Crushed Entropy Aura Stone

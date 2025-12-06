@@ -1,17 +1,12 @@
 package magicmod.common.util;
 
 import java.util.BitSet;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.cleanroommc.modularui.utils.MathUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import magicmod.common.data.CapacityLRUCache;
 
 public class FeatureLookup<T> {
 

@@ -1,21 +1,24 @@
 package magicmod;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.cleanroommc.modularui.factory.GuiManager;
+import com.gtnewhorizon.gtnhlib.blockstate.core.BlockProperty;
+import com.gtnewhorizon.gtnhlib.blockstate.registry.BlockPropertyRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import magicmod.common.blocks.BlockChalkMixer;
 import magicmod.common.blocks.BlockItemHolder;
@@ -33,11 +36,12 @@ import magicmod.common.mechanics.aura.NodeAuraField;
 import magicmod.common.mechanics.chalk.ChalkRegistry;
 import magicmod.common.mechanics.chalk.ChalkTrait;
 import magicmod.common.mechanics.chalk.IChalkModifier;
+import magicmod.common.mechanics.rifts.AuraRiftSpawner;
+import magicmod.common.mechanics.rifts.EntityAuraRift;
 import magicmod.common.tiles.TileEntityChalkMixer;
 import magicmod.common.util.Curve;
 import magicmod.common.util.Mods;
 import magicmod.common.worldgen.structure.core.StructurePieceCommand;
-import magicmod.common.worldgen.structure.test.TestStructurePieceGenerator;
 import magicmod.server.commands.AuraFieldCommand;
 
 public class CommonProxy {
@@ -46,6 +50,8 @@ public class CommonProxy {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
 
         GuiManager.registerFactory(BlockChalkMixer.GuiHandler.INSTANCE);
+
+        EntityRegistry.registerModEntity(EntityAuraRift.class, "aura-rift", 0, MagicMod.MODID, 64, 20, false);
     }
 
     public void init(FMLInitializationEvent event) {
@@ -60,6 +66,11 @@ public class CommonProxy {
         GameRegistry.registerBlock(BlockChalkMixer.INSTANCE, "chalk-mixer");
         GameRegistry.registerTileEntity(TileEntityChalkMixer.class, "chalk-mixer");
 
+        BlockPropertyRegistry.registerProperty(BlockChalkMixer.INSTANCE, BlockChalkMixer.FACING);
+        BlockPropertyRegistry.registerProperty(
+            Item.getItemFromBlock(BlockChalkMixer.INSTANCE),
+            BlockProperty.constant("facing", ForgeDirection.NORTH));
+
         if (Mods.Waila.isModLoaded()) {
             WailaInit.init();
         }
@@ -71,6 +82,8 @@ public class CommonProxy {
                 0.6f,
                 Curve.normal(10, 500, 100, 50),
                 Curve.normal(25, 2000, 100, 100)));
+
+        GameRegistry.registerWorldGenerator(AuraRiftSpawner.INSTANCE, Integer.MAX_VALUE);
     }
 
     public void postInit(FMLPostInitializationEvent event) {
@@ -119,12 +132,6 @@ public class CommonProxy {
                     return aura;
                 }
             });
-
-        try {
-            new TestStructurePieceGenerator();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void serverStarting(FMLServerStartingEvent event) {

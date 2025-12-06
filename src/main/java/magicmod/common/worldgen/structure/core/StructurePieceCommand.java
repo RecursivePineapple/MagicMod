@@ -101,7 +101,7 @@ public class StructurePieceCommand extends CommandBase {
 
                 StructurePiece piece = StructurePiece.load(pieceName);
 
-                piece.place(player.worldObj, pos, null);
+                piece.place(player.worldObj, pos, null, null);
             }
             default -> {
                 throw new WrongUsageException(this.getCommandUsage(sender));

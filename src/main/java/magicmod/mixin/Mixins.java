@@ -9,6 +9,12 @@ public enum Mixins implements IMixins {
     STRUCTURE_REDIRECTS(new MixinBuilder()
         .addCommonMixins("minecraft.MixinMapGenStructure", "minecraft.MixinStructureStart")
         .setPhase(Phase.EARLY)),
+    WORLD_EXT(new MixinBuilder()
+        .addCommonMixins("minecraft.MixinWorld")
+        .setPhase(Phase.EARLY)),
+    AURA_RIFT_SPAWNING(new MixinBuilder()
+        .addCommonMixins("minecraft.MixinWorldGenLakes")
+        .setPhase(Phase.EARLY)),
     //
     ;
 

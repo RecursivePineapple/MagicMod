@@ -1,4 +1,4 @@
-package magicmod.common.util;
+package magicmod.common.data;
 
 import java.util.Optional;
 import java.util.function.Function;

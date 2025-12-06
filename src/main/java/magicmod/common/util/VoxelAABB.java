@@ -96,6 +96,12 @@ public class VoxelAABB implements Iterable<Vector3ic> {
         return this;
     }
 
+    public boolean contains(int x, int y, int z) {
+        return x >= Math.min(a.x, b.x) && x <= Math.max(a.x, b.x)
+            && y >= Math.min(a.y, b.y) && y <= Math.max(a.y, b.y)
+            && z >= Math.min(a.z, b.z) && z <= Math.max(a.z, b.z);
+    }
+
     @Override
     public @Nonnull Iterator<Vector3ic> iterator() {
         Vector3i min = min();

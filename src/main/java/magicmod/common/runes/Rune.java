@@ -15,6 +15,7 @@ import magicmod.common.runes.impl.ExtractRune;
 import magicmod.common.runes.impl.InputRune;
 import magicmod.common.runes.impl.LahRune;
 import magicmod.common.runes.impl.OrderRune;
+import magicmod.common.runes.impl.OriginRune;
 import magicmod.common.runes.impl.OutputRune;
 import magicmod.common.runes.impl.RuneA;
 import magicmod.common.runes.impl.SimpleRune;
@@ -33,6 +34,7 @@ public enum Rune {
     Toh(7, TohRune::new),
     Lah(8, LahRune::new),
     Doh(9, DohRune::new),
+    Origin(10, OriginRune::new),
     //
     ;
 

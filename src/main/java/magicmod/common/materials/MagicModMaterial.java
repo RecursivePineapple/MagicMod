@@ -5,7 +5,6 @@ import java.util.HashSet;
 import org.jetbrains.annotations.Nullable;
 
 import materiallib.api.enums.OrePrefix;
-import materiallib.api.material.IMaterialHandle;
 import materiallib.api.material.StandardMaterial;
 import materiallib.api.material.metadata.MaterialColorMetaKey;
 import materiallib.api.material.metadata.MaterialMetadata;
@@ -19,8 +18,10 @@ public class MagicModMaterial extends StandardMaterial {
     private ITextureSet textureSet;
     private final HashSet<OrePrefix> disabledPrefixes = new HashSet<>();
 
-    public MagicModMaterial(MagicModMaterialIds id, String name) {
-        super(MagicModMaterialRepo.INSTANCE, id.id, name);
+    public MagicModMaterial(MagicMaterials handle) {
+        super(MagicModMaterialRepo.INSTANCE, handle.id, handle.name());
+
+        handle.setMaterial(this);
     }
 
     public MagicModMaterial setColor(ImmutableColor color) {
@@ -36,10 +37,6 @@ public class MagicModMaterial extends StandardMaterial {
     public MagicModMaterial disablePrefix(OrePrefix prefix) {
         this.disabledPrefixes.add(prefix);
         return this;
-    }
-
-    public void finish(IMaterialHandle<MagicModMaterial> handle) {
-        handle.setMaterial(this);
     }
 
     @Override

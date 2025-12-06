@@ -67,6 +67,28 @@ public class AuraBuffer implements IAuraBuffer {
     }
 
     @Override
+    public double getTotalAmount() {
+        var iter = Object2DoubleMaps.fastIterator(energies);
+
+        double sum = 0;
+
+        while (iter.hasNext()) {
+            var e = iter.next();
+
+            double amount = e.getDoubleValue();
+
+            if (amount <= 0 || Double.isNaN(amount)) {
+                iter.remove();
+                continue;
+            }
+
+            sum += amount;
+        }
+
+        return sum;
+    }
+
+    @Override
     public void forEachConcept(ConceptConsumerCancelable fn) {
         var iter = Object2DoubleMaps.fastIterator(energies);
 

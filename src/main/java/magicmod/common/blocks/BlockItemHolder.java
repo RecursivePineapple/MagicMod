@@ -2,20 +2,17 @@ package magicmod.common.blocks;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import com.gtnewhorizon.gtnhlib.client.model.ModelLoader;
-import com.gtnewhorizon.gtnhlib.client.model.Variant;
+import com.gtnewhorizon.gtnhlib.client.model.ModelISBRH;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import magicmod.MagicMod;
-import magicmod.client.rendering.ItemHolderISBRH;
+import magicmod.common.util.MCUtils;
 
 @SuppressWarnings("UnstableApiUsage")
 public class BlockItemHolder extends BlockContainer {
-    public static final Variant MODEL = new Variant(new ResourceLocation(MagicMod.MODID, "models/item_holder.json"), 0, 0, 0, false);
 
     public static final BlockItemHolder INSTANCE = new BlockItemHolder();
 
@@ -24,13 +21,19 @@ public class BlockItemHolder extends BlockContainer {
 
         setBlockName("item-holder");
 
-        ModelLoader.registerModels(() -> {}, MODEL);
+        MCUtils.setBlockBounds(this, 4, 0, 4, 12, 9, 12);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public int getRenderType() {
-        return ItemHolderISBRH.INSTANCE.id;
+        return ModelISBRH.JSON_ISBRH_ID;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerBlockIcons(IIconRegister reg) {
+
     }
 
     @Override

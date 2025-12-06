@@ -78,7 +78,11 @@ public interface IAuraBuffer extends Iterable<AuraStack> {
         Object2DoubleMaps.fastForEach(contents, e -> {
             double extracted = this.extract(e.getKey(), distribution.getResonance(e.getKey()) * amount, false);
 
-            target.add(e.getKey(), extracted * efficiency);
+            double rejected = target.add(e.getKey(), extracted * efficiency);
+
+            if (rejected > 0) {
+                this.add(e.getKey(), rejected);
+            }
         });
     }
 
